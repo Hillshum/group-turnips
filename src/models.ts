@@ -1,6 +1,5 @@
-
 export interface Inputs {
-  prices: number[],
+  prices: number[];
   previousPattern: PATTERN;
 }
 

@@ -8,11 +8,10 @@ import PriceInputs from './components/price-inputs/price-inputs';
 
 const DEFAULT_PRICES = {
   previousPattern: 0,
-   prices: [100, 300, 210, 242, 242, 222, 242, 111, 231, 122, 123, 123, 120],
-  }
+  prices: [100, 300, 210, 242, 242, 222, 242, 111, 231, 122, 123, 123, 120],
+};
 
 function App() {
-
   const predictor = new Predictor([100, 242, 101], false, PATTERN.DECREASING);
   const predictions = predictor.analyze_possibilities();
   // console.log(predictions);
@@ -21,7 +20,7 @@ function App() {
 
   return (
     <div className="App">
-      <PriceInputs inputs={prices} onChange={setPrices}/>
+      <PriceInputs inputs={prices} onChange={setPrices} />
       <IslandOverview predictions={predictions} name="Elendel" />
     </div>
   );

@@ -1,6 +1,5 @@
 /* eslint-disable */
-// @ts-nocheck 
-
+// @ts-nocheck
 
 const PATTERN = {
   FLUCTUATING: 0,
@@ -11,15 +10,15 @@ const PATTERN = {
 
 const PROBABILITY_MATRIX = {
   [PATTERN.FLUCTUATING]: {
-    [PATTERN.FLUCTUATING]: 0.20,
-    [PATTERN.LARGE_SPIKE]: 0.30,
+    [PATTERN.FLUCTUATING]: 0.2,
+    [PATTERN.LARGE_SPIKE]: 0.3,
     [PATTERN.DECREASING]: 0.15,
     [PATTERN.SMALL_SPIKE]: 0.35,
   },
   [PATTERN.LARGE_SPIKE]: {
-    [PATTERN.FLUCTUATING]: 0.50,
+    [PATTERN.FLUCTUATING]: 0.5,
     [PATTERN.LARGE_SPIKE]: 0.05,
-    [PATTERN.DECREASING]: 0.20,
+    [PATTERN.DECREASING]: 0.2,
     [PATTERN.SMALL_SPIKE]: 0.25,
   },
   [PATTERN.DECREASING]: {
@@ -76,9 +75,9 @@ function float_sum(input) {
     const cur = input[i];
     const t = sum + cur;
     if (Math.abs(sum) >= Math.abs(cur)) {
-      c += (sum - t) + cur;
+      c += sum - t + cur;
     } else {
-      c += (cur - t) + sum;
+      c += cur - t + sum;
     }
     sum = t;
   }
@@ -104,9 +103,9 @@ function prefix_float_sum(input) {
     const cur = input[i];
     const t = sum + cur;
     if (Math.abs(sum) >= Math.abs(cur)) {
-      c += (sum - t) + cur;
+      c += sum - t + cur;
     } else {
-      c += (cur - t) + sum;
+      c += cur - t + sum;
     }
     sum = t;
     prefix_sum.push([sum, c]);
@@ -147,7 +146,7 @@ class PDF {
     if (uniform) {
       for (let i = 0; i < this.prob.length; i++) {
         this.prob[i] =
-            range_intersect_length(this.range_of(i), range) / total_length;
+          range_intersect_length(this.range_of(i), range) / total_length;
       }
     }
   }
@@ -265,10 +264,12 @@ class PDF {
       // This may involve numbers of differing magnitudes, so use the float sum
       // algorithm to sum these up.
       const numbers_to_sum = [
-        prefix[right + 1][0], prefix[right + 1][1],
-        -prefix[left][0], -prefix[left][1],
+        prefix[right + 1][0],
+        prefix[right + 1][1],
+        -prefix[left][0],
+        -prefix[left][1],
       ];
-      if (left === i-max_Y) {
+      if (left === i - max_Y) {
         // Need to halve the left endpoint.
         numbers_to_sum.push(-this.prob[left] / 2);
       }
@@ -290,12 +291,11 @@ class PDF {
 }
 
 class Predictor {
-
   /**
-   * 
-   * @param {number[]} prices 
-   * @param {boolean} first_buy 
-   * @param {import("./models").PATTERN} previous_pattern 
+   *
+   * @param {number[]} prices
+   * @param {boolean} first_buy
+   * @param {import("./models").PATTERN} previous_pattern
    */
   constructor(prices, first_buy, previous_pattern) {
     // The reverse-engineered code is not perfectly accurate, especially as it's not
@@ -311,27 +311,27 @@ class Predictor {
   }
 
   minimum_rate_from_given_and_base(given_price, buy_price) {
-    return RATE_MULTIPLIER * (given_price - 0.99999) / buy_price;
+    return (RATE_MULTIPLIER * (given_price - 0.99999)) / buy_price;
   }
 
   maximum_rate_from_given_and_base(given_price, buy_price) {
-    return RATE_MULTIPLIER * (given_price + 0.00001) / buy_price;
+    return (RATE_MULTIPLIER * (given_price + 0.00001)) / buy_price;
   }
 
   rate_range_from_given_and_base(given_price, buy_price) {
     return [
       this.minimum_rate_from_given_and_base(given_price, buy_price),
-      this.maximum_rate_from_given_and_base(given_price, buy_price)
+      this.maximum_rate_from_given_and_base(given_price, buy_price),
     ];
   }
 
   get_price(rate, basePrice) {
-    return this.intceil(rate * basePrice / RATE_MULTIPLIER);
+    return this.intceil((rate * basePrice) / RATE_MULTIPLIER);
   }
 
-  * multiply_generator_probability(generator, probability) {
+  *multiply_generator_probability(generator, probability) {
     for (const it of generator) {
-      yield {...it, probability: it.probability * probability};
+      yield { ...it, probability: it.probability * probability };
     }
   }
 
@@ -348,7 +348,13 @@ class Predictor {
    * If the given_prices won't match, returns 0.
    */
   generate_individual_random_price(
-      given_prices, predicted_prices, start, length, rate_min, rate_max) {
+    given_prices,
+    predicted_prices,
+    start,
+    length,
+    rate_min,
+    rate_max
+  ) {
     rate_min *= RATE_MULTIPLIER;
     rate_max *= RATE_MULTIPLIER;
 
@@ -360,15 +366,21 @@ class Predictor {
       let min_pred = this.get_price(rate_min, buy_price);
       let max_pred = this.get_price(rate_max, buy_price);
       if (!isNaN(given_prices[i])) {
-        if (given_prices[i] < min_pred - this.fudge_factor || given_prices[i] > max_pred + this.fudge_factor) {
+        if (
+          given_prices[i] < min_pred - this.fudge_factor ||
+          given_prices[i] > max_pred + this.fudge_factor
+        ) {
           // Given price is out of predicted range, so this is the wrong pattern
           return 0;
         }
         // TODO: How to deal with probability when there's fudge factor?
         // Clamp the value to be in range now so the probability won't be totally biased to fudged values.
-        const real_rate_range =
-          this.rate_range_from_given_and_base(clamp(given_prices[i], min_pred, max_pred), buy_price);
-        prob *= range_intersect_length(rate_range, real_rate_range) /
+        const real_rate_range = this.rate_range_from_given_and_base(
+          clamp(given_prices[i], min_pred, max_pred),
+          buy_price
+        );
+        prob *=
+          range_intersect_length(rate_range, real_rate_range) /
           range_length(rate_range);
         min_pred = given_prices[i];
         max_pred = given_prices[i];
@@ -396,8 +408,15 @@ class Predictor {
    * If the given_prices won't match, returns 0.
    */
   generate_decreasing_random_price(
-      given_prices, predicted_prices, start, length, start_rate_min,
-      start_rate_max, rate_decay_min, rate_decay_max) {
+    given_prices,
+    predicted_prices,
+    start,
+    length,
+    start_rate_min,
+    start_rate_max,
+    rate_decay_min,
+    rate_decay_max
+  ) {
     start_rate_min *= RATE_MULTIPLIER;
     start_rate_max *= RATE_MULTIPLIER;
     rate_decay_min *= RATE_MULTIPLIER;
@@ -411,14 +430,19 @@ class Predictor {
       let min_pred = this.get_price(rate_pdf.min_value(), buy_price);
       let max_pred = this.get_price(rate_pdf.max_value(), buy_price);
       if (!isNaN(given_prices[i])) {
-        if (given_prices[i] < min_pred - this.fudge_factor || given_prices[i] > max_pred + this.fudge_factor) {
+        if (
+          given_prices[i] < min_pred - this.fudge_factor ||
+          given_prices[i] > max_pred + this.fudge_factor
+        ) {
           // Given price is out of predicted range, so this is the wrong pattern
           return 0;
         }
         // TODO: How to deal with probability when there's fudge factor?
         // Clamp the value to be in range now so the probability won't be totally biased to fudged values.
-        const real_rate_range =
-            this.rate_range_from_given_and_base(clamp(given_prices[i], min_pred, max_pred), buy_price);
+        const real_rate_range = this.rate_range_from_given_and_base(
+          clamp(given_prices[i], min_pred, max_pred),
+          buy_price
+        );
         prob *= rate_pdf.range_limit(real_rate_range);
         if (prob == 0) {
           return 0;
@@ -437,7 +461,6 @@ class Predictor {
     return prob;
   }
 
-
   /*
    * This corresponds to the code:
    *   rate = randfloat(rate_min, rate_max);
@@ -450,7 +473,12 @@ class Predictor {
    * If the given_prices won't match, returns 0.
    */
   generate_peak_price(
-      given_prices, predicted_prices, start, rate_min, rate_max) {
+    given_prices,
+    predicted_prices,
+    start,
+    rate_min,
+    rate_max
+  ) {
     rate_min *= RATE_MULTIPLIER;
     rate_max *= RATE_MULTIPLIER;
 
@@ -464,15 +492,21 @@ class Predictor {
     if (!isNaN(middle_price)) {
       const min_pred = this.get_price(rate_min, buy_price);
       const max_pred = this.get_price(rate_max, buy_price);
-      if (middle_price < min_pred - this.fudge_factor || middle_price > max_pred + this.fudge_factor) {
+      if (
+        middle_price < min_pred - this.fudge_factor ||
+        middle_price > max_pred + this.fudge_factor
+      ) {
         // Given price is out of predicted range, so this is the wrong pattern
         return 0;
       }
       // TODO: How to deal with probability when there's fudge factor?
       // Clamp the value to be in range now so the probability won't be totally biased to fudged values.
-      const real_rate_range =
-          this.rate_range_from_given_and_base(clamp(middle_price, min_pred, max_pred), buy_price);
-      prob *= range_intersect_length(rate_range, real_rate_range) /
+      const real_rate_range = this.rate_range_from_given_and_base(
+        clamp(middle_price, min_pred, max_pred),
+        buy_price
+      );
+      prob *=
+        range_intersect_length(rate_range, real_rate_range) /
         range_length(rate_range);
       if (prob == 0) {
         return 0;
@@ -503,13 +537,19 @@ class Predictor {
       }
       const min_pred = this.get_price(rate_min, buy_price) - 1;
       const max_pred = this.get_price(rate_range[1], buy_price) - 1;
-      if (price < min_pred - this.fudge_factor || price > max_pred + this.fudge_factor) {
+      if (
+        price < min_pred - this.fudge_factor ||
+        price > max_pred + this.fudge_factor
+      ) {
         // Given price is out of predicted range, so this is the wrong pattern
         return 0;
       }
       // TODO: How to deal with probability when there's fudge factor?
       // Clamp the value to be in range now so the probability won't be totally biased to fudged values.
-      const rate2_range = this.rate_range_from_given_and_base(clamp(price, min_pred, max_pred)+ 1, buy_price);
+      const rate2_range = this.rate_range_from_given_and_base(
+        clamp(price, min_pred, max_pred) + 1,
+        buy_price
+      );
       const F = (t, ZZ) => {
         if (t <= 0) {
           return 0;
@@ -570,9 +610,14 @@ class Predictor {
     return prob;
   }
 
-  * generate_pattern_0_with_lengths(
-          given_prices, high_phase_1_len, dec_phase_1_len, high_phase_2_len,
-          dec_phase_2_len, high_phase_3_len) {
+  *generate_pattern_0_with_lengths(
+    given_prices,
+    high_phase_1_len,
+    dec_phase_1_len,
+    high_phase_2_len,
+    dec_phase_2_len,
+    high_phase_3_len
+  ) {
     /*
         // PATTERN 0: high, decreasing, high, decreasing, high
         work = 2;
@@ -624,44 +669,87 @@ class Predictor {
 
     // High Phase 1
     probability *= this.generate_individual_random_price(
-        given_prices, predicted_prices, 2, high_phase_1_len, 0.9, 1.4);
+      given_prices,
+      predicted_prices,
+      2,
+      high_phase_1_len,
+      0.9,
+      1.4
+    );
     if (probability == 0) {
       return;
     }
 
     // Dec Phase 1
     probability *= this.generate_decreasing_random_price(
-        given_prices, predicted_prices, 2 + high_phase_1_len, dec_phase_1_len,
-        0.6, 0.8, 0.04, 0.1);
+      given_prices,
+      predicted_prices,
+      2 + high_phase_1_len,
+      dec_phase_1_len,
+      0.6,
+      0.8,
+      0.04,
+      0.1
+    );
     if (probability == 0) {
       return;
     }
 
     // High Phase 2
-    probability *= this.generate_individual_random_price(given_prices, predicted_prices,
-        2 + high_phase_1_len + dec_phase_1_len, high_phase_2_len, 0.9, 1.4);
+    probability *= this.generate_individual_random_price(
+      given_prices,
+      predicted_prices,
+      2 + high_phase_1_len + dec_phase_1_len,
+      high_phase_2_len,
+      0.9,
+      1.4
+    );
     if (probability == 0) {
       return;
     }
 
     // Dec Phase 2
     probability *= this.generate_decreasing_random_price(
-        given_prices, predicted_prices,
-        2 + high_phase_1_len + dec_phase_1_len + high_phase_2_len,
-        dec_phase_2_len, 0.6, 0.8, 0.04, 0.1);
+      given_prices,
+      predicted_prices,
+      2 + high_phase_1_len + dec_phase_1_len + high_phase_2_len,
+      dec_phase_2_len,
+      0.6,
+      0.8,
+      0.04,
+      0.1
+    );
     if (probability == 0) {
       return;
     }
 
     // High Phase 3
-    if (2 + high_phase_1_len + dec_phase_1_len + high_phase_2_len + dec_phase_2_len + high_phase_3_len != 14) {
+    if (
+      2 +
+        high_phase_1_len +
+        dec_phase_1_len +
+        high_phase_2_len +
+        dec_phase_2_len +
+        high_phase_3_len !=
+      14
+    ) {
       throw new Error("Phase lengths don't add up");
     }
 
-    const prev_length = 2 + high_phase_1_len + dec_phase_1_len +
-        high_phase_2_len + dec_phase_2_len;
+    const prev_length =
+      2 +
+      high_phase_1_len +
+      dec_phase_1_len +
+      high_phase_2_len +
+      dec_phase_2_len;
     probability *= this.generate_individual_random_price(
-        given_prices, predicted_prices, prev_length, 14 - prev_length, 0.9, 1.4);
+      given_prices,
+      predicted_prices,
+      prev_length,
+      14 - prev_length,
+      0.9,
+      1.4
+    );
     if (probability == 0) {
       return;
     }
@@ -673,7 +761,7 @@ class Predictor {
     };
   }
 
-  * generate_pattern_0(given_prices) {
+  *generate_pattern_0(given_prices) {
     /*
         decPhaseLen1 = randbool() ? 3 : 2;
         decPhaseLen2 = 5 - decPhaseLen1;
@@ -683,16 +771,28 @@ class Predictor {
     */
     for (var dec_phase_1_len = 2; dec_phase_1_len < 4; dec_phase_1_len++) {
       for (var high_phase_1_len = 0; high_phase_1_len < 7; high_phase_1_len++) {
-        for (var high_phase_3_len = 0; high_phase_3_len < (7 - high_phase_1_len - 1 + 1); high_phase_3_len++) {
+        for (
+          var high_phase_3_len = 0;
+          high_phase_3_len < 7 - high_phase_1_len - 1 + 1;
+          high_phase_3_len++
+        ) {
           yield* this.multiply_generator_probability(
-            this.generate_pattern_0_with_lengths(given_prices, high_phase_1_len, dec_phase_1_len, 7 - high_phase_1_len - high_phase_3_len, 5 - dec_phase_1_len, high_phase_3_len),
-            1 / (4 - 2) / 7 / (7 - high_phase_1_len));
+            this.generate_pattern_0_with_lengths(
+              given_prices,
+              high_phase_1_len,
+              dec_phase_1_len,
+              7 - high_phase_1_len - high_phase_3_len,
+              5 - dec_phase_1_len,
+              high_phase_3_len
+            ),
+            1 / (4 - 2) / 7 / (7 - high_phase_1_len)
+          );
         }
       }
     }
   }
 
-  * generate_pattern_1_with_peak(given_prices, peak_start) {
+  *generate_pattern_1_with_peak(given_prices, peak_start) {
     /*
       // PATTERN 1: decreasing middle, high spike, random low
       peakStart = randint(3, 9);
@@ -728,7 +828,15 @@ class Predictor {
     let probability = 1;
 
     probability *= this.generate_decreasing_random_price(
-        given_prices, predicted_prices, 2, peak_start - 2, 0.85, 0.9, 0.03, 0.05);
+      given_prices,
+      predicted_prices,
+      2,
+      peak_start - 2,
+      0.85,
+      0.9,
+      0.03,
+      0.05
+    );
     if (probability == 0) {
       return;
     }
@@ -738,8 +846,13 @@ class Predictor {
     let max_randoms = [1.4, 2.0, 6.0, 2.0, 1.4, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9];
     for (let i = peak_start; i < 14; i++) {
       probability *= this.generate_individual_random_price(
-          given_prices, predicted_prices, i, 1, min_randoms[i - peak_start],
-          max_randoms[i - peak_start]);
+        given_prices,
+        predicted_prices,
+        i,
+        1,
+        min_randoms[i - peak_start],
+        max_randoms[i - peak_start]
+      );
       if (probability == 0) {
         return;
       }
@@ -751,13 +864,16 @@ class Predictor {
     };
   }
 
-  * generate_pattern_1(given_prices) {
+  *generate_pattern_1(given_prices) {
     for (var peak_start = 3; peak_start < 10; peak_start++) {
-      yield* this.multiply_generator_probability(this.generate_pattern_1_with_peak(given_prices, peak_start), 1 / (10 - 3));
+      yield* this.multiply_generator_probability(
+        this.generate_pattern_1_with_peak(given_prices, peak_start),
+        1 / (10 - 3)
+      );
     }
   }
 
-  * generate_pattern_2(given_prices) {
+  *generate_pattern_2(given_prices) {
     /*
         // PATTERN 2: consistently decreasing
         rate = 0.9;
@@ -785,7 +901,15 @@ class Predictor {
     let probability = 1;
 
     probability *= this.generate_decreasing_random_price(
-        given_prices, predicted_prices, 2, 14 - 2, 0.85, 0.9, 0.03, 0.05);
+      given_prices,
+      predicted_prices,
+      2,
+      14 - 2,
+      0.85,
+      0.9,
+      0.03,
+      0.05
+    );
     if (probability == 0) {
       return;
     }
@@ -797,8 +921,7 @@ class Predictor {
     };
   }
 
-  * generate_pattern_3_with_peak(given_prices, peak_start) {
-
+  *generate_pattern_3_with_peak(given_prices, peak_start) {
     /*
       // PATTERN 3: decreasing, spike, decreasing
       peakStart = randint(2, 9);
@@ -843,28 +966,54 @@ class Predictor {
     let probability = 1;
 
     probability *= this.generate_decreasing_random_price(
-        given_prices, predicted_prices, 2, peak_start - 2, 0.4, 0.9, 0.03, 0.05);
+      given_prices,
+      predicted_prices,
+      2,
+      peak_start - 2,
+      0.4,
+      0.9,
+      0.03,
+      0.05
+    );
     if (probability == 0) {
       return;
     }
 
     // The peak
     probability *= this.generate_individual_random_price(
-        given_prices, predicted_prices, peak_start, 2, 0.9, 1.4);
+      given_prices,
+      predicted_prices,
+      peak_start,
+      2,
+      0.9,
+      1.4
+    );
     if (probability == 0) {
       return;
     }
 
     probability *= this.generate_peak_price(
-        given_prices, predicted_prices, peak_start + 2, 1.4, 2.0);
+      given_prices,
+      predicted_prices,
+      peak_start + 2,
+      1.4,
+      2.0
+    );
     if (probability == 0) {
       return;
     }
 
     if (peak_start + 5 < 14) {
       probability *= this.generate_decreasing_random_price(
-          given_prices, predicted_prices, peak_start + 5, 14 - (peak_start + 5),
-          0.4, 0.9, 0.03, 0.05);
+        given_prices,
+        predicted_prices,
+        peak_start + 5,
+        14 - (peak_start + 5),
+        0.4,
+        0.9,
+        0.03,
+        0.05
+      );
       if (probability == 0) {
         return;
       }
@@ -877,35 +1026,54 @@ class Predictor {
     };
   }
 
-  * generate_pattern_3(given_prices) {
+  *generate_pattern_3(given_prices) {
     for (let peak_start = 2; peak_start < 10; peak_start++) {
-      yield* this.multiply_generator_probability(this.generate_pattern_3_with_peak(given_prices, peak_start), 1 / (10 - 2));
+      yield* this.multiply_generator_probability(
+        this.generate_pattern_3_with_peak(given_prices, peak_start),
+        1 / (10 - 2)
+      );
     }
   }
 
   get_transition_probability(previous_pattern) {
-    if (typeof previous_pattern === 'undefined' || Number.isNaN(previous_pattern) || previous_pattern === null || previous_pattern < 0 || previous_pattern > 3) {
+    if (
+      typeof previous_pattern === 'undefined' ||
+      Number.isNaN(previous_pattern) ||
+      previous_pattern === null ||
+      previous_pattern < 0 ||
+      previous_pattern > 3
+    ) {
       // Use the steady state probabilities of PROBABILITY_MATRIX if we don't
       // know what the previous pattern was.
       // See https://github.com/mikebryant/ac-nh-turnip-prices/issues/68
       // and https://github.com/mikebryant/ac-nh-turnip-prices/pull/90
       // for more information.
-      return [4530/13082, 3236/13082, 1931/13082, 3385/13082];
+      return [4530 / 13082, 3236 / 13082, 1931 / 13082, 3385 / 13082];
     }
 
     return PROBABILITY_MATRIX[previous_pattern];
   }
 
-  * generate_all_patterns(sell_prices, previous_pattern) {
-    const generate_pattern_fns = [this.generate_pattern_0, this.generate_pattern_1, this.generate_pattern_2, this.generate_pattern_3];
-    const transition_probability = this.get_transition_probability(previous_pattern);
+  *generate_all_patterns(sell_prices, previous_pattern) {
+    const generate_pattern_fns = [
+      this.generate_pattern_0,
+      this.generate_pattern_1,
+      this.generate_pattern_2,
+      this.generate_pattern_3,
+    ];
+    const transition_probability = this.get_transition_probability(
+      previous_pattern
+    );
 
     for (let i = 0; i < 4; i++) {
-      yield* this.multiply_generator_probability(generate_pattern_fns[i].bind(this)(sell_prices), transition_probability[i]);
+      yield* this.multiply_generator_probability(
+        generate_pattern_fns[i].bind(this)(sell_prices),
+        transition_probability[i]
+      );
     }
   }
 
-  * generate_possibilities(sell_prices, first_buy, previous_pattern) {
+  *generate_possibilities(sell_prices, first_buy, previous_pattern) {
     if (first_buy || isNaN(sell_prices[0])) {
       for (var buy_price = 90; buy_price <= 110; buy_price++) {
         const temp_sell_prices = sell_prices.slice();
@@ -926,21 +1094,30 @@ class Predictor {
   /**
    * @returns {import("./models").Prediction[]}
    */
-  analyze_possibilities(){
+  analyze_possibilities() {
     const sell_prices = this.prices;
     const first_buy = this.first_buy;
     const previous_pattern = this.previous_pattern;
     let generated_possibilities = [];
     for (let i = 0; i < 6; i++) {
       this.fudge_factor = i;
-      generated_possibilities = Array.from(this.generate_possibilities(sell_prices, first_buy, previous_pattern));
+      generated_possibilities = Array.from(
+        this.generate_possibilities(sell_prices, first_buy, previous_pattern)
+      );
       if (generated_possibilities.length > 0) {
-        console.log("Generated possibilities using fudge factor %d: ", i, generated_possibilities);
+        console.log(
+          'Generated possibilities using fudge factor %d: ',
+          i,
+          generated_possibilities
+        );
         break;
       }
     }
 
-    const total_probability = generated_possibilities.reduce((acc, it) => acc + it.probability, 0);
+    const total_probability = generated_possibilities.reduce(
+      (acc, it) => acc + it.probability,
+      0
+    );
     for (const it of generated_possibilities) {
       it.probability /= total_probability;
     }
@@ -950,7 +1127,7 @@ class Predictor {
       var weekMaxes = [];
       for (let day of poss.prices.slice(2)) {
         // Check for a future date by checking for a range of prices
-        if(day.min !== day.max){
+        if (day.min !== day.max) {
           weekMins.push(day.min);
           weekMaxes.push(day.max);
         } else {
@@ -960,8 +1137,8 @@ class Predictor {
         }
       }
       if (!weekMins.length && !weekMaxes.length) {
-        weekMins.push(poss.prices[poss.prices.length -1].min);
-        weekMaxes.push(poss.prices[poss.prices.length -1].max);
+        weekMins.push(poss.prices[poss.prices.length - 1].min);
+        weekMaxes.push(poss.prices[poss.prices.length - 1].max);
       }
       poss.weekGuaranteedMinimum = Math.max(...weekMins);
       poss.weekMax = Math.max(...weekMaxes);
@@ -970,8 +1147,8 @@ class Predictor {
     let category_totals = {};
     for (let i of [0, 1, 2, 3]) {
       category_totals[i] = generated_possibilities
-        .filter(value => value.pattern_number == i)
-        .map(value => value.probability)
+        .filter((value) => value.pattern_number == i)
+        .map((value) => value.probability)
         .reduce((previous, current) => previous + current, 0);
     }
 
@@ -980,7 +1157,10 @@ class Predictor {
     }
 
     generated_possibilities.sort((a, b) => {
-      return b.category_total_probability - a.category_total_probability || b.probability - a.probability;
+      return (
+        b.category_total_probability - a.category_total_probability ||
+        b.probability - a.probability
+      );
     });
 
     let global_min_max = [];
@@ -1003,8 +1183,10 @@ class Predictor {
     generated_possibilities.unshift({
       pattern_number: 4,
       prices: global_min_max,
-      weekGuaranteedMinimum: Math.min(...generated_possibilities.map(poss => poss.weekGuaranteedMinimum)),
-      weekMax: Math.max(...generated_possibilities.map(poss => poss.weekMax))
+      weekGuaranteedMinimum: Math.min(
+        ...generated_possibilities.map((poss) => poss.weekGuaranteedMinimum)
+      ),
+      weekMax: Math.max(...generated_possibilities.map((poss) => poss.weekMax)),
     });
 
     return generated_possibilities;
