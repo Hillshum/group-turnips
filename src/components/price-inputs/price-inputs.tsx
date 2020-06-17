@@ -35,7 +35,9 @@ const PriceInputs = ({ inputs, onChange }: Props) => {
               value={inputs.prices[index]}
               onChange={(e) => {
                 const newinputs = { ...inputs, prices: [...inputs.prices] };
-                newinputs.prices[index] = Number(e.target.value);
+                newinputs.prices[index] = e.target.value
+                  ? Number(e.target.value)
+                  : undefined;
                 onChange(newinputs);
               }}
             />
