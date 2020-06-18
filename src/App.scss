@@ -1,5 +1,11 @@
 .App {
   text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  .island-info {
+    margin: 20px;
+    width: 300px;
+  }
 }
 
 .App-logo {

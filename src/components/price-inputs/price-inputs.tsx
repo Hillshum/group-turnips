@@ -18,14 +18,16 @@ const PRICES = [
   'Saturday PM',
 ];
 
-interface Props {
+export interface InputProps {
+  name: string;
   inputs: Inputs;
   onChange: (inputs: Inputs) => void;
 }
 
-const PriceInputs = ({ inputs, onChange }: Props) => {
+const PriceInputs = ({ name, inputs, onChange }: InputProps) => {
   return (
     <div className="price-inputs">
+      <div>{name}</div>
       {PRICES.map((price, index) => (
         <div className="price-input" key={price}>
           <label>
