@@ -53,4 +53,4 @@ const AsyncResults = ({ inputs, name }: Props) => {
   );
 };
 
-export default AsyncResults;
+export default React.memo(AsyncResults);
