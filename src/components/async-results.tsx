@@ -27,25 +27,32 @@ interface Props {
 }
 
 const AsyncResults = ({ inputs, name }: Props) => {
-  const [results, setResults] = React.useState<Prediction[] | null>(null);
-  const callbackRef = React.useRef<RequestIdleCallbackHandle>();
-  React.useEffect(() => {
-    if (window.requestIdleCallback) {
-      if (callbackRef.current) {
-        window.cancelIdleCallback(callbackRef.current);
-        callbackRef.current = null;
-      }
-      callbackRef.current = window.requestIdleCallback(() => {
-        const predictor = new Predictor(
-          inputs.prices as any,
-          false,
-          inputs.previousPattern,
-        );
-        const predictions = predictor.analyze_possibilities();
-        setResults(predictions);
-      });
-    }
-  }, [inputs]);
+  // const [results, setResults] = React.useState<Prediction[] | null>(null);
+  // const callbackRef = React.useRef<RequestIdleCallbackHandle>();
+  // React.useEffect(() => {
+  //   if (window.requestIdleCallback) {
+  //     if (callbackRef.current) {
+  //       window.cancelIdleCallback(callbackRef.current);
+  //       callbackRef.current = null;
+  //     }
+  //     callbackRef.current = window.requestIdleCallback(() => {
+  //       const predictor = new Predictor(
+  //         inputs.prices as any,
+  //         false,
+  //         inputs.previousPattern,
+  //       );
+  //       const predictions = predictor.analyze_possibilities();
+  //       setResults(predictions);
+  //     });
+  //   }
+  // }, [inputs]);
+
+  const predictor = new Predictor(
+    [inputs.prices[0], ...inputs.prices] as any,
+    false,
+    inputs.previousPattern,
+  );
+  const results = predictor.analyze_possibilities();
   return (
     <div className="async-results">
       {results && <IslandOverview predictions={results} name={name} />}
