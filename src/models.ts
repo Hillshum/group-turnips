@@ -9,7 +9,7 @@ export interface Prices {
 }
 
 export interface Prediction {
-  pattern_number: 0 | 1 | 2 | 3;
+  pattern_number: PATTERN;
   prices: Prices[];
   probability: number;
   weekGuaranteedMinimum: number;

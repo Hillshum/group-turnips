@@ -11,12 +11,12 @@ interface IslandList {
 
 const ISLANDS = {
   Elendel: {
-    previousPattern: 0,
-    prices: [100, 300, 210, 242, 242, 222, 242, 111, 231, 122, 123, 123, 120],
+    previousPattern: -1,
+    prices: [100, 120],
   },
   'Lotus Lake': {
-    previousPattern: 0,
-    prices: [100, 300, 210, 242, 242, 222, 242, 111, 231, 122, 123, 123, 120],
+    previousPattern: -1,
+    prices: [100],
   },
 };
 
@@ -26,7 +26,7 @@ function App() {
   return (
     <div className="App">
       {Object.entries(islandInputs).map(([name, inputs]) => (
-        <div className="island-info">
+        <div key={name} className="island-info">
           <PriceInputs
             name={name}
             inputs={inputs}
