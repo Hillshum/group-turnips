@@ -6,18 +6,18 @@ import './price-inputs.scss';
 
 const PRICES = [
   'Sunday',
-  'Monday AM',
-  'Monday PM',
-  'Tuesday AM',
-  'Tuesday PM',
-  'Wednesday AM',
-  'Wednesday PM',
-  'Thursday AM',
-  'Thursday PM',
-  'Friday AM',
-  'Friday PM',
-  'Saturday AM',
-  'Saturday PM',
+  'Mon AM',
+  'Mon PM',
+  'Tues AM',
+  'Tues PM',
+  'Wed AM',
+  'Wed PM',
+  'Thurs AM',
+  'Thurs PM',
+  'Fri AM',
+  'Fri PM',
+  'Sat AM',
+  'Sat PM',
 ];
 
 export interface InputProps {
@@ -36,11 +36,11 @@ const PriceInputs = ({ name, inputs, onChange }: InputProps) => {
           {isCollapsed ? 'Show Prices' : 'Hide Prices'}
         </button>
       </div>
-      {!isCollapsed &&
-        PRICES.map((price, index) => (
-          <div className="price-input" key={price}>
-            <label>
-              {price}
+      <div className="inputs-list">
+        {!isCollapsed &&
+          PRICES.map((price, index) => (
+            <div className="price-input" key={price}>
+              <label>{price}</label>
               <input
                 type="number"
                 value={inputs.prices[index]}
@@ -52,9 +52,9 @@ const PriceInputs = ({ name, inputs, onChange }: InputProps) => {
                   onChange(newinputs);
                 }}
               />
-            </label>
-          </div>
-        ))}
+            </div>
+          ))}
+      </div>
     </div>
   );
 };

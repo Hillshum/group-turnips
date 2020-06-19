@@ -4,5 +4,30 @@
     button {
       margin-left: auto;
     }
+
+    border: 1px solid black;
+
+    padding: 5px;
+  }
+
+  .inputs-list {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .price-input {
+    display: flex;
+
+    & * {
+      margin: auto;
+    }
+
+    label {
+      width: 100px;
+    }
+
+    input {
+      margin-left: 10px;
+      width: 50px;
+    }
   }
 }
