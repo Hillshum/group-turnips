@@ -62,7 +62,7 @@ const PriceInputs = ({ name, inputs: intialInputs, onChange }: InputProps) => {
                       prices: [...(inputs?.prices ?? [])],
                     };
                     newinputs.prices[index] =
-                      e.target.value !== undefined
+                      e.target.value !== ''
                         ? Number(e.target.value)
                         : undefined;
                     setInputs(newinputs);
