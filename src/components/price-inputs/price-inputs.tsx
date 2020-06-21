@@ -26,8 +26,14 @@ export interface InputProps {
   onChange: (inputs: Inputs) => void;
 }
 
-const PriceInputs = ({ name, inputs, onChange }: InputProps) => {
+const PriceInputs = ({ name, inputs: intialInputs, onChange }: InputProps) => {
   const [isCollapsed, setCollapsed] = React.useState(true);
+  const [inputs, setInputs] = React.useState<Inputs | null>(null);
+
+  React.useEffect(() => {
+    setInputs(intialInputs);
+  }, [intialInputs]);
+
   return (
     <div className="price-inputs">
       <div className="inputs-header">
@@ -37,23 +43,36 @@ const PriceInputs = ({ name, inputs, onChange }: InputProps) => {
         </button>
       </div>
       <div className="inputs-list">
-        {!isCollapsed &&
-          PRICES.map((price, index) => (
-            <div className="price-input" key={price}>
-              <label>{price}</label>
-              <input
-                type="number"
-                value={inputs.prices[index]}
-                onChange={(e) => {
-                  const newinputs = { ...inputs, prices: [...inputs.prices] };
-                  newinputs.prices[index] = e.target.value
-                    ? Number(e.target.value)
-                    : undefined;
-                  onChange(newinputs);
-                }}
-              />
-            </div>
-          ))}
+        {!isCollapsed && inputs && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              onChange(inputs);
+            }}
+          >
+            {PRICES.map((price, index) => (
+              <div className="price-input" key={price}>
+                <label>{price}</label>
+                <input
+                  type="number"
+                  value={inputs?.prices[index]}
+                  onChange={(e) => {
+                    const newinputs = {
+                      ...inputs,
+                      prices: [...(inputs?.prices ?? [])],
+                    };
+                    newinputs.prices[index] =
+                      e.target.value !== undefined
+                        ? Number(e.target.value)
+                        : undefined;
+                    setInputs(newinputs);
+                  }}
+                />
+              </div>
+            ))}
+            <input type="submit" value="Save" />
+          </form>
+        )}
       </div>
     </div>
   );
