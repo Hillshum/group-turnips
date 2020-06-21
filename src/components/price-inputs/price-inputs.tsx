@@ -1,6 +1,8 @@
 import React from 'react';
 
-import { Inputs } from '../../models';
+import { Inputs, PATTERN } from '../../models';
+import { $enum } from 'ts-enum-util';
+import { getPatternLabel } from '../../util/patternLabels';
 
 import './price-inputs.scss';
 
@@ -20,6 +22,29 @@ const PRICES = [
   'Sat PM',
 ];
 
+interface PatternProps {
+  label: string;
+  value: number;
+  checked: boolean;
+  onChange: (val: number) => void;
+}
+
+const PatternOption = ({ label, value, checked, onChange }: PatternProps) => {
+  return (
+    <label>
+      {' '}
+      {label}
+      <input
+        type="radio"
+        name="previousPattern"
+        value={value}
+        checked={checked}
+        onChange={(e) => onChange(Number(e.target.value))}
+      />
+    </label>
+  );
+};
+
 export interface InputProps {
   name: string;
   inputs: Inputs;
@@ -34,6 +59,13 @@ const PriceInputs = ({ name, inputs: intialInputs, onChange }: InputProps) => {
     setInputs(intialInputs);
   }, [intialInputs]);
 
+  const onPatternChange = (val: number) => {
+    if (!inputs) {
+      return; // realistically this handler should never fire without inputs
+    }
+    setInputs({ ...inputs, prices: [...inputs.prices], previousPattern: val });
+  };
+
   return (
     <div className="price-inputs">
       <div className="inputs-header">
@@ -42,14 +74,35 @@ const PriceInputs = ({ name, inputs: intialInputs, onChange }: InputProps) => {
           {isCollapsed ? 'Show Prices' : 'Hide Prices'}
         </button>
       </div>
-      <div className="inputs-list">
-        {!isCollapsed && inputs && (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              onChange(inputs);
-            }}
-          >
+      {!isCollapsed && inputs && (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onChange(inputs);
+          }}
+        >
+          <div className="pattern-select">
+            <div>Previous Pattern</div>
+            <div className="pattern-options">
+              <PatternOption
+                label="Unknown"
+                checked={inputs.previousPattern === -1}
+                value={-1}
+                onChange={onPatternChange}
+              />
+              {$enum(PATTERN)
+                .getValues()
+                .map((pattern) => (
+                  <PatternOption
+                    label={getPatternLabel(pattern)}
+                    checked={pattern === inputs.previousPattern}
+                    value={pattern}
+                    onChange={onPatternChange}
+                  />
+                ))}
+            </div>
+          </div>
+          <div className="inputs-list">
             {PRICES.map((price, index) => (
               <div className="price-input" key={price}>
                 <label>{price}</label>
@@ -69,9 +122,9 @@ const PriceInputs = ({ name, inputs: intialInputs, onChange }: InputProps) => {
               </div>
             ))}
             <input type="submit" value="Save" />
-          </form>
-        )}
-      </div>
+          </div>
+        </form>
+      )}
     </div>
   );
 };

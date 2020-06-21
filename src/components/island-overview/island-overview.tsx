@@ -2,6 +2,8 @@ import React from 'react';
 import { $enum } from 'ts-enum-util';
 import { Prediction, PATTERN } from '../../models';
 
+import { getPatternLabel } from '../../util/patternLabels';
+
 import './island-overview.scss';
 
 interface Props {
@@ -15,16 +17,6 @@ type PatternResults = {
   [PATTERN.LARGE_SPIKE]?: number;
   [PATTERN.SMALL_SPIKE]?: number;
   // [PATTERN.OVERALL]?: number;
-};
-
-const getPatternLabel = (pattern: PATTERN) => {
-  return $enum.mapValue(pattern).with({
-    [PATTERN.DECREASING]: 'Decreasing',
-    [PATTERN.FLUCTUATING]: 'Random',
-    [PATTERN.LARGE_SPIKE]: 'Large Spike',
-    [PATTERN.SMALL_SPIKE]: 'Small Spike',
-    // [PATTERN.OVERALL]: 'Total',
-  });
 };
 
 const getPatterns = (predictions: Prediction[]) => {
