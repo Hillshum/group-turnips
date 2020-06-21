@@ -1,12 +1,15 @@
 import React from 'react';
 import './App.scss';
 
+import { useCollection } from 'react-firebase-hooks/firestore';
+
 import AsyncResults from './components/async-results';
 import { Inputs } from './models';
 import PriceInputs from './components/price-inputs/price-inputs';
+import { firestore } from './api/firebase';
 
-interface IslandList {
-  [key: string]: Inputs;
+interface Island extends Inputs {
+  name: string;
 }
 
 const ISLANDS = {
@@ -23,20 +26,28 @@ const ISLANDS = {
 function App() {
   const [islandInputs, setInputs] = React.useState(ISLANDS);
 
+  const [islands, loading, error] = useCollection(
+    firestore.collection('islands'),
+  );
+
   return (
     <div className="App">
-      {Object.entries(islandInputs).map(([name, inputs]) => (
-        <div key={name} className="island-info">
-          <PriceInputs
-            name={name}
-            inputs={inputs}
-            onChange={(inputs) =>
-              setInputs({ ...islandInputs, [name]: inputs })
-            }
-          />
-          <AsyncResults inputs={inputs} name={name} />
-        </div>
-      ))}
+      {/* {Object.entries(islandInputs).map(([name, inputs]) => ( */}
+      {islands?.docs.map((island) => {
+        const { name, ...inputs } = island.data() as Island;
+        console.log(name, inputs);
+
+        return (
+          <div key={name} className="island-info">
+            <PriceInputs
+              name={name}
+              inputs={inputs}
+              onChange={(inputs) => island.ref.update({ ...inputs })}
+            />
+            <AsyncResults inputs={inputs} name={name} />
+          </div>
+        );
+      })}
     </div>
   );
 }
