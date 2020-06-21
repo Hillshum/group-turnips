@@ -26,6 +26,32 @@ interface Props {
   name: string;
 }
 
+const areEqual = (prev: Props, next: Props) => {
+  if (prev.name !== next.name) {
+    return false;
+  }
+
+  if (prev.inputs.previousPattern !== next.inputs.previousPattern) {
+    return false;
+  }
+
+  if (prev.inputs.prices.length !== next.inputs.prices.length) {
+    return false;
+  }
+
+  const pricesMatch = prev.inputs.prices.every((prevPrice, index) => {
+    const nextPrice = next.inputs.prices[index];
+    return prevPrice === nextPrice;
+  });
+
+  return pricesMatch;
+};
+
+const formatPrices = (prices: (number | null)[]) => {
+  // Firebase doesn't like undefined values, but the predictor doesn't like null
+  return [prices[0], ...prices].map((p) => (p === null ? undefined : p));
+};
+
 const AsyncResults = ({ inputs, name }: Props) => {
   // const [results, setResults] = React.useState<Prediction[] | null>(null);
   // const callbackRef = React.useRef<RequestIdleCallbackHandle>();
@@ -48,7 +74,7 @@ const AsyncResults = ({ inputs, name }: Props) => {
   // }, [inputs]);
 
   const predictor = new Predictor(
-    [inputs.prices[0], ...inputs.prices] as any,
+    formatPrices(inputs.prices),
     false,
     inputs.previousPattern,
   );
@@ -60,4 +86,4 @@ const AsyncResults = ({ inputs, name }: Props) => {
   );
 };
 
-export default React.memo(AsyncResults);
+export default React.memo(AsyncResults, areEqual);

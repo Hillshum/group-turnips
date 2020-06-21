@@ -293,7 +293,7 @@ class PDF {
 class Predictor {
   /**
    *
-   * @param {number[]} prices
+   * @param {(number | undefined)[]} prices
    * @param {boolean} first_buy
    * @param {import("./models").PATTERN} previous_pattern
    */
