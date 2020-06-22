@@ -37,6 +37,13 @@ const PROBABILITY_MATRIX = {
 
 const RATE_MULTIPLIER = 10000;
 
+onmessage = function (e) {
+  const { prices, first_buy, previous } = e.data;
+  const predictor = new Predictor(prices, first_buy, previous);
+  const results = predictor.analyze_possibilities();
+  postMessage(results);
+};
+
 function range_length(range) {
   return range[1] - range[0];
 }
@@ -172,7 +179,7 @@ class PDF {
   }
 
   /**
-   * @returns {number} The sum of probabilities before normalisation.
+   * @returns {nuformatPrices(mber} The sum of probabilities before normalisation.
    */
   normalize() {
     const total_probability = float_sum(this.prob);
@@ -353,7 +360,7 @@ class Predictor {
     start,
     length,
     rate_min,
-    rate_max,
+    rate_max
   ) {
     rate_min *= RATE_MULTIPLIER;
     rate_max *= RATE_MULTIPLIER;
@@ -377,7 +384,7 @@ class Predictor {
         // Clamp the value to be in range now so the probability won't be totally biased to fudged values.
         const real_rate_range = this.rate_range_from_given_and_base(
           clamp(given_prices[i], min_pred, max_pred),
-          buy_price,
+          buy_price
         );
         prob *=
           range_intersect_length(rate_range, real_rate_range) /
@@ -415,7 +422,7 @@ class Predictor {
     start_rate_min,
     start_rate_max,
     rate_decay_min,
-    rate_decay_max,
+    rate_decay_max
   ) {
     start_rate_min *= RATE_MULTIPLIER;
     start_rate_max *= RATE_MULTIPLIER;
@@ -441,7 +448,7 @@ class Predictor {
         // Clamp the value to be in range now so the probability won't be totally biased to fudged values.
         const real_rate_range = this.rate_range_from_given_and_base(
           clamp(given_prices[i], min_pred, max_pred),
-          buy_price,
+          buy_price
         );
         prob *= rate_pdf.range_limit(real_rate_range);
         if (prob == 0) {
@@ -477,7 +484,7 @@ class Predictor {
     predicted_prices,
     start,
     rate_min,
-    rate_max,
+    rate_max
   ) {
     rate_min *= RATE_MULTIPLIER;
     rate_max *= RATE_MULTIPLIER;
@@ -503,7 +510,7 @@ class Predictor {
       // Clamp the value to be in range now so the probability won't be totally biased to fudged values.
       const real_rate_range = this.rate_range_from_given_and_base(
         clamp(middle_price, min_pred, max_pred),
-        buy_price,
+        buy_price
       );
       prob *=
         range_intersect_length(rate_range, real_rate_range) /
@@ -548,7 +555,7 @@ class Predictor {
       // Clamp the value to be in range now so the probability won't be totally biased to fudged values.
       const rate2_range = this.rate_range_from_given_and_base(
         clamp(price, min_pred, max_pred) + 1,
-        buy_price,
+        buy_price
       );
       const F = (t, ZZ) => {
         if (t <= 0) {
@@ -616,7 +623,7 @@ class Predictor {
     dec_phase_1_len,
     high_phase_2_len,
     dec_phase_2_len,
-    high_phase_3_len,
+    high_phase_3_len
   ) {
     /*
         // PATTERN 0: high, decreasing, high, decreasing, high
@@ -674,7 +681,7 @@ class Predictor {
       2,
       high_phase_1_len,
       0.9,
-      1.4,
+      1.4
     );
     if (probability == 0) {
       return;
@@ -689,7 +696,7 @@ class Predictor {
       0.6,
       0.8,
       0.04,
-      0.1,
+      0.1
     );
     if (probability == 0) {
       return;
@@ -702,7 +709,7 @@ class Predictor {
       2 + high_phase_1_len + dec_phase_1_len,
       high_phase_2_len,
       0.9,
-      1.4,
+      1.4
     );
     if (probability == 0) {
       return;
@@ -717,7 +724,7 @@ class Predictor {
       0.6,
       0.8,
       0.04,
-      0.1,
+      0.1
     );
     if (probability == 0) {
       return;
@@ -748,7 +755,7 @@ class Predictor {
       prev_length,
       14 - prev_length,
       0.9,
-      1.4,
+      1.4
     );
     if (probability == 0) {
       return;
@@ -783,9 +790,9 @@ class Predictor {
               dec_phase_1_len,
               7 - high_phase_1_len - high_phase_3_len,
               5 - dec_phase_1_len,
-              high_phase_3_len,
+              high_phase_3_len
             ),
-            1 / (4 - 2) / 7 / (7 - high_phase_1_len),
+            1 / (4 - 2) / 7 / (7 - high_phase_1_len)
           );
         }
       }
@@ -835,7 +842,7 @@ class Predictor {
       0.85,
       0.9,
       0.03,
-      0.05,
+      0.05
     );
     if (probability == 0) {
       return;
@@ -851,7 +858,7 @@ class Predictor {
         i,
         1,
         min_randoms[i - peak_start],
-        max_randoms[i - peak_start],
+        max_randoms[i - peak_start]
       );
       if (probability == 0) {
         return;
@@ -868,7 +875,7 @@ class Predictor {
     for (var peak_start = 3; peak_start < 10; peak_start++) {
       yield* this.multiply_generator_probability(
         this.generate_pattern_1_with_peak(given_prices, peak_start),
-        1 / (10 - 3),
+        1 / (10 - 3)
       );
     }
   }
@@ -908,7 +915,7 @@ class Predictor {
       0.85,
       0.9,
       0.03,
-      0.05,
+      0.05
     );
     if (probability == 0) {
       return;
@@ -973,7 +980,7 @@ class Predictor {
       0.4,
       0.9,
       0.03,
-      0.05,
+      0.05
     );
     if (probability == 0) {
       return;
@@ -986,7 +993,7 @@ class Predictor {
       peak_start,
       2,
       0.9,
-      1.4,
+      1.4
     );
     if (probability == 0) {
       return;
@@ -997,7 +1004,7 @@ class Predictor {
       predicted_prices,
       peak_start + 2,
       1.4,
-      2.0,
+      2.0
     );
     if (probability == 0) {
       return;
@@ -1012,7 +1019,7 @@ class Predictor {
         0.4,
         0.9,
         0.03,
-        0.05,
+        0.05
       );
       if (probability == 0) {
         return;
@@ -1030,14 +1037,14 @@ class Predictor {
     for (let peak_start = 2; peak_start < 10; peak_start++) {
       yield* this.multiply_generator_probability(
         this.generate_pattern_3_with_peak(given_prices, peak_start),
-        1 / (10 - 2),
+        1 / (10 - 2)
       );
     }
   }
 
   get_transition_probability(previous_pattern) {
     if (
-      typeof previous_pattern === 'undefined' ||
+      typeof previous_pattern === "undefined" ||
       Number.isNaN(previous_pattern) ||
       previous_pattern === null ||
       previous_pattern < 0 ||
@@ -1062,13 +1069,13 @@ class Predictor {
       this.generate_pattern_3,
     ];
     const transition_probability = this.get_transition_probability(
-      previous_pattern,
+      previous_pattern
     );
 
     for (let i = 0; i < 4; i++) {
       yield* this.multiply_generator_probability(
         generate_pattern_fns[i].bind(this)(sell_prices),
-        transition_probability[i],
+        transition_probability[i]
       );
     }
   }
@@ -1102,13 +1109,13 @@ class Predictor {
     for (let i = 0; i < 6; i++) {
       this.fudge_factor = i;
       generated_possibilities = Array.from(
-        this.generate_possibilities(sell_prices, first_buy, previous_pattern),
+        this.generate_possibilities(sell_prices, first_buy, previous_pattern)
       );
       if (generated_possibilities.length > 0) {
         console.log(
-          'Generated possibilities using fudge factor %d: ',
+          "Generated possibilities using fudge factor %d: ",
           i,
-          generated_possibilities,
+          generated_possibilities
         );
         break;
       }
@@ -1116,7 +1123,7 @@ class Predictor {
 
     const total_probability = generated_possibilities.reduce(
       (acc, it) => acc + it.probability,
-      0,
+      0
     );
     for (const it of generated_possibilities) {
       it.probability /= total_probability;
@@ -1184,7 +1191,7 @@ class Predictor {
       pattern_number: 4,
       prices: global_min_max,
       weekGuaranteedMinimum: Math.min(
-        ...generated_possibilities.map((poss) => poss.weekGuaranteedMinimum),
+        ...generated_possibilities.map((poss) => poss.weekGuaranteedMinimum)
       ),
       weekMax: Math.max(...generated_possibilities.map((poss) => poss.weekMax)),
     });
@@ -1193,4 +1200,4 @@ class Predictor {
   }
 }
 
-export default Predictor;
+// export default Predictor;

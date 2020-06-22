@@ -1,7 +1,11 @@
 import React from 'react';
-import Predictor from '../predictor';
+// import Predictor from '../predictor';
 import { Inputs, Prediction } from '../models';
 import IslandOverview from './island-overview/island-overview';
+import { format } from 'path';
+
+// @ts-ignore
+// import Worker from 'worker-loader!../predictor'; // eslint-disable-line import/no-webpack-loader-syntax
 
 type RequestIdleCallbackHandle = any;
 type RequestIdleCallbackOptions = {
@@ -53,32 +57,23 @@ const formatPrices = (prices: (number | null)[]) => {
 };
 
 const AsyncResults = ({ inputs, name }: Props) => {
-  // const [results, setResults] = React.useState<Prediction[] | null>(null);
-  // const callbackRef = React.useRef<RequestIdleCallbackHandle>();
-  // React.useEffect(() => {
-  //   if (window.requestIdleCallback) {
-  //     if (callbackRef.current) {
-  //       window.cancelIdleCallback(callbackRef.current);
-  //       callbackRef.current = null;
-  //     }
-  //     callbackRef.current = window.requestIdleCallback(() => {
-  //       const predictor = new Predictor(
-  //         inputs.prices as any,
-  //         false,
-  //         inputs.previousPattern,
-  //       );
-  //       const predictions = predictor.analyze_possibilities();
-  //       setResults(predictions);
-  //     });
-  //   }
-  // }, [inputs]);
+  const [results, setResults] = React.useState<Prediction[] | null>(null);
+  React.useEffect(() => {
+    const worker = new Worker('predictor.js');
+    worker.onmessage = (e) => setResults(e.data);
+    worker.postMessage({
+      prices: formatPrices(inputs.prices),
+      previous: inputs.previousPattern,
+      first_buy: false,
+    });
+  }, [inputs]);
 
-  const predictor = new Predictor(
-    formatPrices(inputs.prices),
-    false,
-    inputs.previousPattern,
-  );
-  const results = predictor.analyze_possibilities();
+  // const predictor = new Predictor(
+  //   formatPrices(inputs.prices),
+  //   false,
+  //   inputs.previousPattern,
+  // );
+  // const results = predictor.analyze_possibilities();
   return (
     <div className="async-results">
       {results && <IslandOverview predictions={results} name={name} />}
