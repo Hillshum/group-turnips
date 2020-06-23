@@ -12,20 +12,7 @@ interface Island extends Inputs {
   name: string;
 }
 
-const ISLANDS = {
-  Elendel: {
-    previousPattern: -1,
-    prices: [100, 120],
-  },
-  'Lotus Lake': {
-    previousPattern: -1,
-    prices: [100],
-  },
-};
-
 function App() {
-  const [islandInputs, setInputs] = React.useState(ISLANDS);
-
   const [islands, loading, error] = useCollection(
     firestore.collection('islands'),
   );
