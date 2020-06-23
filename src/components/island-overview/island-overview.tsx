@@ -46,6 +46,16 @@ const Percent = ({ children }: { children: number }) => (
   <>{(children * 100).toFixed(2)}%</>
 );
 
+const ProphetLink = ({ inputs }: { inputs: Inputs }) => {
+  const prices = inputs.prices.map((p) => (p === null ? '' : p)).join('.');
+  const href = `https://turnipprophet.io/?prices=${prices}&pattern=${inputs.previousPattern}`;
+  return (
+    <a target="_blank" rel="noopener noreferrer" href={href}>
+      Turnip Prophet
+    </a>
+  );
+};
+
 const IslandOverview = ({ inputs, name }: Props) => {
   const [predictions] = usePredictor(inputs);
   const patternResults = predictions && getPatterns(predictions);
@@ -65,6 +75,7 @@ const IslandOverview = ({ inputs, name }: Props) => {
               </div>
             ))}
       </div>
+      <ProphetLink inputs={inputs} />
     </div>
   );
 };
