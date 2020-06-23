@@ -3,7 +3,7 @@ import './App.scss';
 
 import { useCollection } from 'react-firebase-hooks/firestore';
 
-import AsyncResults from './components/async-results';
+import IslandOverview from './components/island-overview/island-overview';
 import { Inputs } from './models';
 import PriceInputs from './components/price-inputs/price-inputs';
 import { firestore } from './api/firebase';
@@ -44,7 +44,7 @@ function App() {
               inputs={inputs}
               onChange={(inputs) => island.ref.update({ ...inputs })}
             />
-            <AsyncResults inputs={inputs} name={name} />
+            <IslandOverview inputs={inputs} name={name} />
           </div>
         );
       })}

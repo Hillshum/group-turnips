@@ -1,13 +1,15 @@
 import React from 'react';
 import { $enum } from 'ts-enum-util';
-import { Prediction, PATTERN } from '../../models';
+
+import usePredictor from '../../api/usePredictor';
+import { Prediction, PATTERN, Inputs } from '../../models';
 
 import { getPatternLabel } from '../../util/patternLabels';
 
 import './island-overview.scss';
 
 interface Props {
-  predictions: Prediction[];
+  inputs: Inputs;
   name: string;
 }
 
@@ -44,22 +46,24 @@ const Percent = ({ children }: { children: number }) => (
   <>{(children * 100).toFixed(2)}%</>
 );
 
-const IslandOverview = ({ predictions, name }: Props) => {
-  const patternResults = getPatterns(predictions);
-  console.log(predictions.length);
+const IslandOverview = ({ inputs, name }: Props) => {
+  const [predictions] = usePredictor(inputs);
+  const patternResults = predictions && getPatterns(predictions);
+  console.log(predictions?.length);
   console.log(patternResults);
   return (
     <div className="island-overview">
       <div className="island-name">{name}</div>
       <div className="patterns">
-        {$enum(PATTERN)
-          .getEntries()
-          .map(([key, val]) => (
-            <div key={key}>
-              {getPatternLabel(val)}:{' '}
-              <Percent>{patternResults[val] ?? 0}</Percent>
-            </div>
-          ))}
+        {patternResults &&
+          $enum(PATTERN)
+            .getEntries()
+            .map(([key, val]) => (
+              <div key={key}>
+                {getPatternLabel(val)}:{' '}
+                <Percent>{patternResults[val] ?? 0}</Percent>
+              </div>
+            ))}
       </div>
     </div>
   );
