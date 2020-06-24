@@ -94,6 +94,7 @@ const PriceInputs = ({ name, inputs: intialInputs, onChange }: InputProps) => {
                 .getValues()
                 .map((pattern) => (
                   <PatternOption
+                    key={pattern}
                     label={getPatternLabel(pattern)}
                     checked={pattern === inputs.previousPattern}
                     value={pattern}
