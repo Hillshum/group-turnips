@@ -50,9 +50,11 @@ const ProphetLink = ({ inputs }: { inputs: Inputs }) => {
   const prices = inputs.prices.map((p) => (p === null ? '' : p)).join('.');
   const href = `https://turnipprophet.io/?prices=${prices}&pattern=${inputs.previousPattern}`;
   return (
-    <a target="_blank" rel="noopener noreferrer" href={href}>
-      Turnip Prophet
-    </a>
+    <div className="prophet-link-wrapper">
+      <a target="_blank" rel="noopener noreferrer" href={href}>
+        Turnip Prophet
+      </a>
+    </div>
   );
 };
 

@@ -1,3 +1,11 @@
 .island-overview {
   border: 1px solid gray;
+  padding: 5px 0;
+
+  .prophet-link-wrapper {
+    padding: 5px 0;
+    a {
+      color: white;
+    }
+  }
 }
