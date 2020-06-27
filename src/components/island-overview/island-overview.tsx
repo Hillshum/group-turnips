@@ -7,7 +7,7 @@ import { Prediction, PATTERN, Inputs } from '../../models';
 import { getPatternLabel } from '../../util/patternLabels';
 
 import './island-overview.scss';
-import IslandGraph from '../island-graph/island-graph';
+const IslandGraph = React.lazy(() => import('../island-graph/island-graph'));
 
 interface Props {
   inputs: Inputs;
@@ -78,7 +78,11 @@ const IslandOverview = ({ inputs, name }: Props) => {
               </div>
             ))}
       </div>
-      {predictions && <IslandGraph predictions={predictions} />}
+      {predictions && (
+        <React.Suspense fallback={() => null}>
+          <IslandGraph predictions={predictions} />
+        </React.Suspense>
+      )}
       <ProphetLink inputs={inputs} />
     </div>
   );
