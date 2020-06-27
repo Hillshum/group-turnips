@@ -43,6 +43,27 @@ const getPatterns = (predictions: Prediction[]) => {
   return results as PatternResults;
 };
 
+const areEqual = (prev: Props, next: Props) => {
+  if (prev.name !== next.name) {
+    return false;
+  }
+
+  if (prev.inputs.previousPattern !== next.inputs.previousPattern) {
+    return false;
+  }
+
+  if (prev.inputs.prices.length !== next.inputs.prices.length) {
+    return false;
+  }
+
+  const pricesMatch = prev.inputs.prices.every((prevPrice, index) => {
+    const nextPrice = next.inputs.prices[index];
+    return prevPrice === nextPrice;
+  });
+
+  return pricesMatch;
+};
+
 const Percent = ({ children }: { children: number }) => (
   <>{(children * 100).toFixed(2)}%</>
 );
@@ -88,4 +109,4 @@ const IslandOverview = ({ inputs, name }: Props) => {
   );
 };
 
-export default IslandOverview;
+export default React.memo(IslandOverview, areEqual);
