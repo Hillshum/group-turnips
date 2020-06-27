@@ -12,7 +12,7 @@ const IslandGraph = ({ predictions }: Props) => {
   return (
     <LineChart data={data} width={300} height={200}>
       <XAxis dataKey="name" />
-      <YAxis width={30} />
+      <YAxis width={30} domain={[0, 700]} />
       <Line type="monotone" dataKey="min" />
       <Line type="monotone" dataKey="max" />
     </LineChart>
