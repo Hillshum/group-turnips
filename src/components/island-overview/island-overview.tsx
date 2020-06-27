@@ -7,6 +7,7 @@ import { Prediction, PATTERN, Inputs } from '../../models';
 import { getPatternLabel } from '../../util/patternLabels';
 
 import './island-overview.scss';
+import IslandGraph from '../island-graph/island-graph';
 
 interface Props {
   inputs: Inputs;
@@ -77,6 +78,7 @@ const IslandOverview = ({ inputs, name }: Props) => {
               </div>
             ))}
       </div>
+      {predictions && <IslandGraph predictions={predictions} />}
       <ProphetLink inputs={inputs} />
     </div>
   );
