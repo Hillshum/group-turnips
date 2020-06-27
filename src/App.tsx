@@ -22,8 +22,6 @@ function App() {
       {/* {Object.entries(islandInputs).map(([name, inputs]) => ( */}
       {islands?.docs.map((island) => {
         const { name, ...inputs } = island.data() as Island;
-        console.log(name, inputs);
-
         return (
           <div key={name} className="island-info">
             <PriceInputs

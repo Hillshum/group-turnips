@@ -83,8 +83,6 @@ const ProphetLink = ({ inputs }: { inputs: Inputs }) => {
 const IslandOverview = ({ inputs, name }: Props) => {
   const [predictions] = usePredictor(inputs);
   const patternResults = predictions && getPatterns(predictions);
-  console.log(predictions?.length);
-  console.log(patternResults);
   return (
     <div className="island-overview">
       <div className="island-name">{name}</div>
@@ -100,7 +98,7 @@ const IslandOverview = ({ inputs, name }: Props) => {
             ))}
       </div>
       {predictions && (
-        <React.Suspense fallback={() => null}>
+        <React.Suspense fallback={null}>
           <IslandGraph predictions={predictions} />
         </React.Suspense>
       )}
