@@ -79,8 +79,7 @@ const ProphetLink = ({ inputs }: { inputs: Inputs }) => {
 };
 
 const IslandOverview = ({ inputs, name, onPredictionsChange }: Props) => {
-  const [predictions] = usePredictor(inputs);
-  predictions && onPredictionsChange(predictions);
+  const [predictions] = usePredictor(inputs, onPredictionsChange);
   const patternResults = predictions && getPatterns(predictions);
   return (
     <div className="island-overview">
