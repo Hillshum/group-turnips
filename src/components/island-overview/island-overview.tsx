@@ -5,6 +5,7 @@ import usePredictor from '../../api/usePredictor';
 import { Prediction, PATTERN, Inputs } from '../../models';
 
 import { getPatternLabel } from '../../util/patternLabels';
+import Percent from '../../util/percent';
 
 import './island-overview.scss';
 const IslandGraph = React.lazy(() => import('../island-graph/island-graph'));
@@ -12,6 +13,7 @@ const IslandGraph = React.lazy(() => import('../island-graph/island-graph'));
 interface Props {
   inputs: Inputs;
   name: string;
+  onPredictionsChange: (predictions: Prediction[]) => void;
 }
 
 type PatternResults = {
@@ -64,10 +66,6 @@ const areEqual = (prev: Props, next: Props) => {
   return pricesMatch;
 };
 
-const Percent = ({ children }: { children: number }) => (
-  <>{(children * 100).toFixed(2)}%</>
-);
-
 const ProphetLink = ({ inputs }: { inputs: Inputs }) => {
   const prices = inputs.prices.map((p) => (p === null ? '' : p)).join('.');
   const href = `https://turnipprophet.io/?prices=${prices}&pattern=${inputs.previousPattern}`;
@@ -80,8 +78,9 @@ const ProphetLink = ({ inputs }: { inputs: Inputs }) => {
   );
 };
 
-const IslandOverview = ({ inputs, name }: Props) => {
+const IslandOverview = ({ inputs, name, onPredictionsChange }: Props) => {
   const [predictions] = usePredictor(inputs);
+  predictions && onPredictionsChange(predictions);
   const patternResults = predictions && getPatterns(predictions);
   return (
     <div className="island-overview">

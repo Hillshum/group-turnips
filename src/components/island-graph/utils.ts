@@ -2,55 +2,55 @@ import { Prediction } from '../../models';
 
 const days = [
   {
-    label: 'Sun',
+    label: 'S',
     index: 0,
   },
   {
-    label: 'Mon AM',
+    label: 'M AM',
     index: 2,
   },
   {
-    label: 'Mon PM',
+    label: 'M PM',
     index: 3,
   },
   {
-    label: 'Tues AM',
+    label: 'Tu AM',
     index: 4,
   },
   {
-    label: 'Tues PM',
+    label: 'Tu PM',
     index: 5,
   },
   {
-    label: 'Wed AM',
+    label: 'W AM',
     index: 6,
   },
   {
-    label: 'Wed PM',
+    label: 'W PM',
     index: 7,
   },
   {
-    label: 'Thurs AM',
+    label: 'Th AM',
     index: 8,
   },
   {
-    label: 'Thurs PM',
+    label: 'Th PM',
     index: 9,
   },
   {
-    label: 'Fri AM',
+    label: 'F AM',
     index: 10,
   },
   {
-    label: 'Fri PM',
+    label: 'F PM',
     index: 11,
   },
   {
-    label: 'Sat AM',
+    label: 'S AM',
     index: 12,
   },
   {
-    label: 'Sat PM',
+    label: 'S PM',
     index: 13,
   },
 ];
