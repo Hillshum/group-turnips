@@ -1,13 +1,17 @@
 .price-inputs {
+  border: 1px solid black;
+
   .inputs-header {
     display: flex;
     button {
       margin-left: auto;
     }
 
-    border: 1px solid black;
-
     padding: 5px;
+  }
+
+  form {
+    border-top: 1px solid black;
   }
 
   .inputs-list {
