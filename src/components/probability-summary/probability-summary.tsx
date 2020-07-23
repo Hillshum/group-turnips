@@ -16,15 +16,17 @@ interface Props {
 const ProbabilitySummary = ({ predictions }: Props) => {
   return (
     <div className="prob-sum">
-      Probability of at least one...
-      {$enum(PATTERN)
-        .getEntries()
-        .map(([key, val]) => (
-          <div key={key}>
-            {getPatternLabel(val)}:{' '}
-            <Percent>{getTotalCategoryProb(predictions, val)}</Percent>
-          </div>
-        ))}
+      <div className="inner">
+        Probability of at least one
+        {$enum(PATTERN)
+          .getEntries()
+          .map(([key, val]) => (
+            <div key={key}>
+              {getPatternLabel(val)}:{' '}
+              <Percent>{getTotalCategoryProb(predictions, val)}</Percent>
+            </div>
+          ))}
+      </div>
     </div>
   );
 };
