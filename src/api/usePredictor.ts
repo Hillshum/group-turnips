@@ -12,6 +12,7 @@ const usePredictor = (
 ) => {
   const [results, setResults] = React.useState<Prediction[] | null>(null);
   React.useEffect(() => {
+    setResults(null);
     const worker = new Worker('predictor.js');
     worker.onmessage = (e) => {
       setResults(e.data);

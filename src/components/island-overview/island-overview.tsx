@@ -7,6 +7,8 @@ import { Prediction, PATTERN, Inputs } from '../../models';
 import { getPatternLabel } from '../../util/patternLabels';
 import Percent from '../../util/percent';
 
+import Spinner from '../spinner/spinner';
+
 import './island-overview.scss';
 const IslandGraph = React.lazy(() => import('../island-graph/island-graph'));
 
@@ -81,6 +83,7 @@ const ProphetLink = ({ inputs }: { inputs: Inputs }) => {
 const IslandOverview = ({ inputs, name, onPredictionsChange }: Props) => {
   const [predictions] = usePredictor(inputs, onPredictionsChange);
   const patternResults = predictions && getPatterns(predictions);
+
   return (
     <div className="island-overview">
       <div className="island-name">{name}</div>
@@ -95,10 +98,12 @@ const IslandOverview = ({ inputs, name, onPredictionsChange }: Props) => {
               </div>
             ))}
       </div>
-      {predictions && (
-        <React.Suspense fallback={null}>
+      {predictions ? (
+        <React.Suspense fallback={<Spinner />}>
           <IslandGraph predictions={predictions} />
         </React.Suspense>
+      ) : (
+        <Spinner />
       )}
       <ProphetLink inputs={inputs} />
     </div>
