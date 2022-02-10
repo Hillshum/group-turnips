@@ -61,8 +61,8 @@ const ProbabilitySummary = ({ predictions }: Props) => {
               <Percent>{getTotalCategoryProb(filteredPredictions, val)}</Percent>
             </div>
           ))}
-        {selectedIslands && <IslandSelector islands={selectedIslands} onChange={onIslandToggle} />}
       </div>
+      {selectedIslands && <IslandSelector islands={selectedIslands} onChange={onIslandToggle} />}
     </div>
   );
 };
