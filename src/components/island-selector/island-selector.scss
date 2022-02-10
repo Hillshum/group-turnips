@@ -6,9 +6,17 @@
     border-top: 0 solid black;
     width: 300px;
     margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    flex-direction: row;
   }
 
   label {
       padding: 5px;
+      background-color: darkgray;
+      margin: 6px 17px;
+      color: white;
+      border-radius: 5px;
   }
 }
