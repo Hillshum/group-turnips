@@ -1,5 +1,6 @@
 import React from 'react';
 import { $enum } from 'ts-enum-util';
+import {isEqual} from 'lodash';
 
 import { PredictionStore } from '../../api/predictionContext';
 import { getTotalCategoryProb } from './probability-utils';
@@ -22,6 +23,13 @@ const ProbabilitySummary = ({ predictions }: Props) => {
 
   const [selectedIslands, setSelected] = React.useState<{[name: string]: boolean}>()
   React.useEffect(()=> {
+    const oldNames = Object.keys(predictions)
+    const newNames = Object.keys(selectedIslands ?? {})
+
+    if (isEqual(oldNames, newNames)) {
+      return
+    }
+
     const islandDefaults = Object.keys(predictions).reduce((prev, name) => ({...prev, [name]: true}), {})
     setSelected(islandDefaults)
   }, [predictions])
