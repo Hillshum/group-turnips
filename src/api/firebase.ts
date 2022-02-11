@@ -1,18 +1,13 @@
 import fbConfig from './firebaseConfig';
 
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/firestore';
+import { initializeApp } from 'firebase/app';
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
-firebase.initializeApp(fbConfig);
+const app = initializeApp(fbConfig);
 
-const firestore = firebase.firestore();
-if (window.location.hostname === 'localhost') {
-  firestore.settings({
-    host: 'localhost:8080',
-    ssl: false,
-  });
-}
+const firestore = getFirestore(app);
+connectFirestoreEmulator(firestore, 'localhost', 8080)
 export { firestore };
 
-export const auth = firebase.auth();
+export const auth = getAuth(app);

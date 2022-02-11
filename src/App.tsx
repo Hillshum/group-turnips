@@ -2,6 +2,7 @@ import React from 'react';
 import './App.scss';
 
 import { useCollection } from 'react-firebase-hooks/firestore';
+import { collection, query, updateDoc } from "firebase/firestore";
 
 import IslandOverview from './components/island-overview/island-overview';
 import { Inputs, Prediction } from './models';
@@ -16,7 +17,7 @@ interface Island extends Inputs {
 
 function App() {
   const [islands, loading, error] = useCollection(
-    firestore.collection('islands'),
+    query(collection(firestore, 'islands'))
   );
 
   const [predictions, setPredictions] = React.useState<PredictionStore>({});
@@ -31,7 +32,6 @@ function App() {
   return (
     <div className="App">
       <ProbabilitySummary predictions={predictions} />
-      {/* {Object.entries(islandInputs).map(([name, inputs]) => ( */}
       {islands?.docs.map((island) => {
         const { name, ...inputs } = island.data() as Island;
         return (
@@ -39,7 +39,7 @@ function App() {
             <PriceInputs
               name={name}
               inputs={inputs}
-              onChange={(inputs) => island.ref.update({ ...inputs })}
+              onChange={(inputs) => updateDoc(island.ref, { ...inputs })}
             />
             <IslandOverview
               inputs={inputs}
