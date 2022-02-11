@@ -7,7 +7,9 @@ import { getAuth } from 'firebase/auth';
 const app = initializeApp(fbConfig);
 
 const firestore = getFirestore(app);
-connectFirestoreEmulator(firestore, 'localhost', 8080)
+if (window.location.hostname === 'localhost') {
+  connectFirestoreEmulator(firestore, 'localhost', 8080)
+}
 export { firestore };
 
 export const auth = getAuth(app);
