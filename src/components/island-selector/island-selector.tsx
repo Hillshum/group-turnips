@@ -13,9 +13,9 @@ const IslandSelector = ({ islands, onChange }: iSelectorProps) => {
         <div className="inner">
             {Object.entries(islands).map(([name, enabled]) =>(
 
-                <label htmlFor={name}>
+                <label key={name} htmlFor={name}>
                     {name}
-                    <input type="checkbox" name={name} checked={enabled} onClick={()=>onChange(name)}/>
+                    <input type="checkbox" name={name} checked={enabled} onChange={()=>onChange(name)}/>
                 </label>
 
             ))}
