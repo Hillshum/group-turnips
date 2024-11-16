@@ -26,3 +26,5 @@ yarn-error.log*
 /.firebase
 
 *.log
+
+src/api/firebaseConfig.ts
